@@ -86,6 +86,10 @@
         }
       }
 
+      setInterval(()=>{
+        fetchMessages();
+      },1000);
+
       window.addEventListener("DOMContentLoaded", fetchMessages);
       sendBtn.addEventListener("click", sendMessage);
     </script>
