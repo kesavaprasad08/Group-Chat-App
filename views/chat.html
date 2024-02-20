@@ -55,18 +55,39 @@
 
       async function fetchMessages() {
         try {
-          const response = await axios.get("http://localhost:3000/chat/chat");
-          const parentNode = document.getElementById("messages-list");
+          let arr =JSON.parse(localStorage.getItem('messages'))
+          let lastId =0
+          if(arr){
+            if(arr.length>0){
+          lastId = (arr[arr.length-1].id);
+            }
+        }else{
+          arr=[];
+        }
+          const response = await axios.get(`http://localhost:3000/chat/chat/${lastId}`);
+        if(response.data.chat.length>0){  
+          arr=[...arr,...response.data.chat]
+          if(Array.isArray(arr)){
+          localStorage.setItem('messages',JSON.stringify(arr))
+          }else{
+            localStorage.setItem('messages',JSON.stringify(arr))
+          }
+        }
+          postMessagesToUi(arr)
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      function postMessagesToUi (messages){
+        const parentNode = document.getElementById("messages-list");
           parentNode.innerHTML = "";
-          response.data.chat.forEach((element) => {
+          messages.forEach((element) => {
             const childNode = document.createElement("li");
             childNode.className = "border p-2 m-2 shadow rounded";
             childNode.innerHTML = element.Messages;
             parentNode.appendChild(childNode);
           });
-        } catch (e) {
-          console.log(e);
-        }
       }
 
       async function sendMessage() {

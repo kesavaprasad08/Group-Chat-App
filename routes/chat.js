@@ -8,7 +8,7 @@ const chatController = require("../controllers/chatController");
 
 router.get("/", chatController.getChatPage);
 
-router.get("/chat", chatController.getChats);
+router.get("/chat/:id", chatController.getChats);
 
 router.post("/chat", userAuthentication.authenticate, chatController.postChat);
 

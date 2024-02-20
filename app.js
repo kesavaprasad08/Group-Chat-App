@@ -26,7 +26,7 @@ app.use("/user", user);
 app.use("/chat", chat);
 
 sequelize
-  .sync({ force: false })
+  .sync({ force: true })
   .then(() => {
     app.listen(3000);
   })
