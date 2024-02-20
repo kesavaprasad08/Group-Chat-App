@@ -1,12 +1,12 @@
 const User = require("../models/user");
-const jwt= require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const bcrypt = require("bcrypt");
 
-const Chat =require('../models/chat');
+const Chat = require("../models/chat");
 
-function generateAccessToken(id,name){
-    return jwt.sign({userId:id,name:name},'abc');
+function generateAccessToken(id, name) {
+  return jwt.sign({ userId: id, name: name }, "abc");
 }
 
 exports.addUser = async (req, res, next) => {
@@ -33,43 +33,50 @@ exports.addUser = async (req, res, next) => {
   }
 };
 
-exports.getLoginPage = async(req,res,next)=>{
-    try{
-        res.sendFile("login.html", { root: "views" });
-    }
-    catch(err){
-res.status(500)
-    }
-}
+exports.getLoginPage = async (req, res, next) => {
+  try {
+    res.sendFile("login.html", { root: "views" });
+  } catch (err) {
+    res.status(500);
+  }
+};
 
-exports.loginUser = async (req,res,next) => {
-    try{
-        const user = await User.findAll({
-            attributes:['id','Name','Email','Password'],
-            where:{
-                Email:req.body.email
-            }
-        })
-        await Chat.create({
-          Messages:user[0].dataValues.Name + ' has joined the chat'
-        })
-      
-        if(user.length !== 0){
-             bcrypt.compare(req.body.password,user[0].dataValues.Password,(err,result)=>{
-                if(!result){            
-                    return res.status(501).json({message:'user not authorized'})
-                }else{ 
-                    return res.status(200).json({status:'success', message: "User  authorized",token:generateAccessToken(user[0].dataValues.id,user[0].dataValues.Name) });
-                }
-                
-            })
-        }else{
-            throw new Error('user not found');
+exports.loginUser = async (req, res, next) => {
+  try {
+    const user = await User.findAll({
+      attributes: ["id", "Name", "Email", "Password"],
+      where: {
+        Email: req.body.email,
+      },
+    });
+    await Chat.create({
+      Messages: user[0].dataValues.Name + " has joined the chat",
+    });
+
+    if (user.length !== 0) {
+      bcrypt.compare(
+        req.body.password,
+        user[0].dataValues.Password,
+        (err, result) => {
+          if (!result) {
+            return res.status(501).json({ message: "user not authorized" });
+          } else {
+            return res.status(200).json({
+              status: "success",
+              message: "User  authorized",
+              token: generateAccessToken(
+                user[0].dataValues.id,
+                user[0].dataValues.Name
+              ),
+            });
+          }
         }
-         
-
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({message:err.message})
+      );
+    } else {
+      throw new Error("user not found");
     }
-}
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};

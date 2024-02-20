@@ -11,11 +11,15 @@
   </head>
   <body>
     <header class="bg-green-500 p-5">
-      <p class="text-xl font-bold leading-tight tracking-tight text-white  md:text-2xl">Group Chat App</p>
+      <p
+        class="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl"
+      >
+        Group Chat App
+      </p>
     </header>
     <section class="bg-gray-50 dark:bg-gray-900">
       <div
-        class="flex flex-col items-center justify-center px-6 py-8 mx-auto  lg:py-0"
+        class="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0"
       >
         <div
           class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700"
@@ -26,61 +30,64 @@
             >
               Chats
             </h1>
-            <ul id="messages-list">
-              
-            </ul>
-            <input type="text"  class="w-9/12 p-2 border" placeholder="Message" id="messageInput"/>
+            <ul id="messages-list"></ul>
+            <input
+              type="text"
+              class="w-9/12 p-2 border"
+              placeholder="Message"
+              id="messageInput"
+            />
             <button
-            type="button"
-            id="btn"
-            class="p-2 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          >
-            Send
-          </button>
-           
+              type="button"
+              id="btn"
+              class="p-2 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            >
+              Send
+            </button>
           </div>
         </div>
       </div>
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
-      const sendBtn = document.getElementById('btn');
-      const token =localStorage.getItem('token');
-      
-      async function fetchMessages (){
-        try{
-          const response =await axios.get('http://localhost:3000/chat/chat');
-          // console.log(response)
-          const parentNode =document.getElementById('messages-list');
-          parentNode.innerHTML='';
-          response.data.chat.forEach(element => {
-            const childNode= document.createElement('li');
-            childNode.className='border p-2 m-2 shadow rounded'
-            childNode.innerHTML=element.Messages;
+      const sendBtn = document.getElementById("btn");
+      const token = localStorage.getItem("token");
+
+      async function fetchMessages() {
+        try {
+          const response = await axios.get("http://localhost:3000/chat/chat");
+          const parentNode = document.getElementById("messages-list");
+          parentNode.innerHTML = "";
+          response.data.chat.forEach((element) => {
+            const childNode = document.createElement("li");
+            childNode.className = "border p-2 m-2 shadow rounded";
+            childNode.innerHTML = element.Messages;
             parentNode.appendChild(childNode);
           });
-
-        }catch(e){
-console.log(e);
+        } catch (e) {
+          console.log(e);
         }
       }
 
-      async function sendMessage(){
-        try{
-          const message= document.getElementById('messageInput').value;
-          const response =await axios.post('http://localhost:3000/chat/chat',{message},{
-            headers:{authorization:token}
-          })
-          document.getElementById('messageInput').value='';
+      async function sendMessage() {
+        try {
+          const message = document.getElementById("messageInput").value;
+          const response = await axios.post(
+            "http://localhost:3000/chat/chat",
+            { message },
+            {
+              headers: { authorization: token },
+            }
+          );
+          document.getElementById("messageInput").value = "";
           fetchMessages();
-        }catch(e){
-console.log(e)
+        } catch (e) {
+          console.log(e);
         }
       }
 
-      window.addEventListener("DOMContentLoaded",fetchMessages)
-      sendBtn.addEventListener('click',sendMessage)
-
+      window.addEventListener("DOMContentLoaded", fetchMessages);
+      sendBtn.addEventListener("click", sendMessage);
     </script>
   </body>
 </html>

@@ -1,15 +1,15 @@
-const express = require('express');
-const cors =require('cors');
+const express = require("express");
+const cors = require("cors");
 
-const bodyParser= require('body-parser');
+const bodyParser = require("body-parser");
 
-const sequelize = require('./util/database');
+const sequelize = require("./util/database");
 
-const app =express();
+const app = express();
 
-const user = require('./routes/user')
-const homePage = require('./routes/home');
-const chat = require('./routes/chat');
+const user = require("./routes/user");
+const homePage = require("./routes/home");
+const chat = require("./routes/chat");
 
 app.use(cors());
 
@@ -21,13 +21,13 @@ app.use(express.static("public"));
 
 app.use(homePage);
 
-app.use('/user',user)
+app.use("/user", user);
 
-app.use('/chat',chat)
+app.use("/chat", chat);
 
-
-sequelize.sync({force:false})   
-.then(()=>{
-    app.listen(3000)
-})
-.catch(er => console.log(er));
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    app.listen(3000);
+  })
+  .catch((er) => console.log(er));
