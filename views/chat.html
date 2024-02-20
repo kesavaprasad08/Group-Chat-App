@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group Chat App</title>
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="bg-green-500 p-5">
+      <p class="text-xl font-bold leading-tight tracking-tight text-white  md:text-2xl">Group Chat App</p>
+    </header>
+    <section class="bg-gray-50 dark:bg-gray-900">
+      <div
+        class="flex flex-col items-center justify-center px-6 py-8 mx-auto  lg:py-0"
+      >
+        <div
+          class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700"
+        >
+          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1
+              class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center text-green-500"
+            >
+              Chats
+            </h1>
+            <ul id="messages-list">
+              
+            </ul>
+           
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+
+      
+      async function fetchMessages (){
+        try{
+          const response =await axios.get('http://localhost:3000/chat/chat');
+          // console.log(response)
+          const parentNode =document.getElementById('messages-list');
+          response.data.chat.forEach(element => {
+            const childNode= document.createElement('li');
+            childNode.className='border p-2 m-2 shadow rounded'
+            childNode.innerHTML=element.Messages;
+            parentNode.appendChild(childNode);
+          });
+
+        }catch(e){
+console.log(e);
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded",fetchMessages)
+
+    </script>
+  </body>
+</html>

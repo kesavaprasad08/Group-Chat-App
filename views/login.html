@@ -99,6 +99,9 @@ const loginHandler = async()=>{
     })
     console.log(response) 
     window.alert(response.data.message);
+    if(response.data.status=='success'){
+      window.location.href='/chat';
+    }
     }
     catch(error){
         window.alert(error.response.data.message)

@@ -1,5 +1,4 @@
 const express = require('express');
-
 const cors =require('cors');
 
 const bodyParser= require('body-parser');
@@ -10,6 +9,7 @@ const app =express();
 
 const user = require('./routes/user')
 const homePage = require('./routes/home');
+const chat = require('./routes/chat');
 
 app.use(cors());
 
@@ -22,6 +22,8 @@ app.use(express.static("public"));
 app.use(homePage);
 
 app.use('/user',user)
+
+app.use('/chat',chat)
 
 
 sequelize.sync({force:false})   
