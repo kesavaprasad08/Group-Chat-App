@@ -53,7 +53,7 @@ exports.loginUser = async (req,res,next) => {
                 if(!result){            
                     return res.status(501).json({message:'user not authorized'})
                 }else{   
-                    return res.status(200).json({ message: "User  authorized" });
+                    return res.status(200).json({ message: "User  authorized",token:generateAccessToken(user[0].dataValues.id,user[0].dataValues.Name) });
                 }
                 
             })

@@ -97,6 +97,7 @@ const loginHandler = async()=>{
     const response =await axios.post('http://localhost:3000/user/login',{
         email,password
     })
+    console.log(response) 
     window.alert(response.data.message);
     }
     catch(error){
