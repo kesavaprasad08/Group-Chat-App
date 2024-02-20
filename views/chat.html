@@ -65,7 +65,10 @@
           arr=[];
         }
           const response = await axios.get(`http://localhost:3000/chat/chat/${lastId}`);
-        if(response.data.chat.length>0){  
+        if(response.data.chat.length>0){
+          if(arr.length+ response.data.chat.length>10){
+            arr.splice(0,response.data.chat.length)
+          }  
           arr=[...arr,...response.data.chat]
           if(Array.isArray(arr)){
           localStorage.setItem('messages',JSON.stringify(arr))
