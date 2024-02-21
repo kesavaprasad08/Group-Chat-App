@@ -1,4 +1,3 @@
-const { Sequelize } = require("sequelize");
 const Chat = require("../models/chat");
 
 exports.getChatPage = async (req, res) => {
@@ -11,9 +10,8 @@ exports.getChatPage = async (req, res) => {
 
 exports.getChats = async (req, res) => {
   try {
-    const id =req.params.id;
-    const chat = await Chat.findAll({where:{id:{[Sequelize.Op.gt]:id} }});
-    // console.log(chat);
+    const id = req.params.id;
+    const chat = await Chat.findAll({ where: { GroupId: id } });
     res.status(200).json({ chat: chat });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -24,6 +22,7 @@ exports.postChat = async (req, res, next) => {
   try {
     await Chat.create({
       Messages: req.user.dataValues.Name + ": " + req.body.message,
+      GroupId: req.body.cur,
     });
     res.status(200).json({ message: req.body.message });
   } catch (err) {
