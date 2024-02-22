@@ -13,7 +13,6 @@ const authenticate = (req, res, next) => {
       throw new Error(err);
     })
     .catch((err) => {
-      console.log(err);
       return res.status(401).json({ success: false });
     });
 };

@@ -49,7 +49,7 @@
           </button>
         </div>
 
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8 shadow w-5/12">
+        <div class="p-6 space-y-4 md:space-y-6 sm:p-8 shadow w-3/12">
           <h1
             class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center text-green-500"
           >
@@ -61,8 +61,16 @@
           </button>
         </div>
         <div id="addMembers" class="hidden">
+          <div>
+            <p
+              class="text-l font-bold leading-tight tracking-tight text-gray-900 md:text-l dark:text-white text-center text-green-500"
+            >
+              Group Members
+            </p>
+            <ul id="groupMembers"></ul>
+          </div>
           <h1
-            class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center text-green-500"
+            class="text-l font-bold leading-tight tracking-tight text-gray-900 md:text-l dark:text-white text-center text-green-500"
           >
             Add Members
           </h1>
@@ -196,6 +204,7 @@
               headers: { authorization: token },
             }
           );
+          fetchGroups();
           window.alert(name + " group created successfully");
           document.getElementById("groupName").value = "";
         } catch (e) {
@@ -244,6 +253,7 @@
           document.getElementById("createNewGroup").className = " hidden";
           document.getElementById("chatHead").innerHTML = curN;
           postMessagesToUi(response.data.chat);
+          postUsersInGroupToUi(response.data.groupUsers);
           startTimeout();
         } catch (e) {
           console.log(e);
@@ -266,9 +276,11 @@
             "http://localhost:3000/groups/addUser",
             { email: name, GroupName: curN, GroupId: cur }
           );
-          console.log(response);
+          document.getElementById("newMemberName").value = "";
         } catch (e) {
-          console.log(err);
+          window.alert("No User Found");
+          document.getElementById("newMemberName").value = "";
+          console.log(e);
         }
       };
 
@@ -281,6 +293,66 @@
         document.getElementById("addMembers").className = "hidden";
         createGroupDisplay.className = "hidden";
       }
+
+      function postUsersInGroupToUi(users) {
+        const parentNode = document.getElementById("groupMembers");
+        parentNode.innerHTML = "";
+        users.forEach((element) => {
+          const childNode = document.createElement("li");
+          const deleteBtn = document.createElement("button");
+          const MakeAdminBtn = document.createElement("button");
+          MakeAdminBtn.innerHTML = "Make Admin";
+          MakeAdminBtn.className =
+            "bg-green-600 p-1 text-white rounded text-xs";
+          deleteBtn.innerHTML = "Remove";
+          deleteBtn.className =
+            "ml-1 bg-red-600 p-1 text-white rounded text-xs";
+          childNode.className = `border p-1 m-2 shadow rounded ${element.id}`;
+          childNode.innerHTML = element.Name;
+          current.className = element.id;
+          deleteBtn.onclick = deleteUserHandler;
+          MakeAdminBtn.onclick = makeAdminHandler;
+          childNode.appendChild(deleteBtn);
+          childNode.appendChild(MakeAdminBtn);
+          parentNode.appendChild(childNode);
+        });
+      }
+
+      async function deleteUserHandler(e) {
+        try {
+          const id = e.srcElement.parentElement.className.split(" ")[5];
+          const response = await axios.delete(
+            `http://localhost:3000/groups/delete/${id}-${cur}`,
+            {
+              headers: { authorization: token },
+            }
+          );
+          fetchGroups();
+        } catch (e) {
+          window.alert("Only Admin can remove User from Groups");
+          console.log(e);
+        }
+      }
+
+      const makeAdminHandler = async (e) => {
+        try {
+          const id = e.srcElement.parentElement.className.split(" ")[5];
+          const response = await axios.post(
+            "http://localhost:3000/groups/make-admin",
+            {
+              userId: id,
+              groupId: cur,
+            },
+            {
+              headers: { authorization: token },
+            }
+          );
+
+          window.alert("admin status changed");
+        } catch (e) {
+          console.log(e);
+        }
+      };
 
       window.addEventListener("DOMContentLoaded", fetchGroups);
       sendBtn.addEventListener("click", sendMessage);

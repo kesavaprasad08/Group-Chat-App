@@ -20,4 +20,8 @@ router.get(
 
 router.post("/addUser", groupController.addNewUser);
 
+router.delete('/delete/:id',userAuthentication.authenticate,groupController.deleteUserFromGroup);
+
+router.post('/make-admin',userAuthentication.authenticate,groupController.makeAdmin)
+
 module.exports = router;

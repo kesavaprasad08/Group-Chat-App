@@ -76,7 +76,6 @@ exports.loginUser = async (req, res, next) => {
       throw new Error("user not found");
     }
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ message: err.message });
   }
 };
