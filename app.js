@@ -8,7 +8,13 @@ const bodyParser = require("body-parser");
 
 const sequelize = require("./util/database");
 
+const socketio = require('socket.io');
+const http =require('http');
+
+
 const app = express();
+const server = http.createServer(app);
+const io =socketio(server);
 
 const User = require("./models/user");
 const Group = require("./models/group");
@@ -43,6 +49,16 @@ Group.hasMany(UserGroup);
 sequelize
   .sync({ force: false })
   .then(() => {
-    app.listen(3000);
+    // app.listen(3000);
+    server.listen(3000);
+    io.on('connection',socket => {
+      socket.on('new-user',data =>{
+        io.emit('user-connected',data)
+      })
+      socket.on('send-chat-message',data =>{
+        io.emit('chat-messages',data)
+      })
+      
+    })
   })
   .catch((er) => console.log(er));
