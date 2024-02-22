@@ -127,7 +127,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
 
-      const socket =io('http://localhost:3000');
+      const socket =io('http://34.229.138.78:3000');
       const sendBtn = document.getElementById("btn");
       const token = localStorage.getItem("token");
       const addNewGroupBtn = document.getElementById("grpBtn");
@@ -162,7 +162,7 @@
             arr = [];
           }
           const response = await axios.get(
-            `http://localhost:3000/chat/chat/${lastId}`
+            `http://34.229.138.78:3000/chat/chat/${lastId}`
           );
           if (response.data.chat.length > 0) {
             if (arr.length + response.data.chat.length > 10) {
@@ -200,7 +200,7 @@
         try {
           const message = document.getElementById("messageInput").value;
           const response = await axios.post(
-            "http://localhost:3000/chat/chat",
+            "http://34.229.138.78:3000/chat/chat",
             { message, cur },
             {
               headers: { authorization: token },
@@ -218,7 +218,7 @@
         const name = document.getElementById("groupName").value;
         try {
           const response = await axios.post(
-            "http://localhost:3000/groups/createGroup",
+            "http://34.229.138.78:3000/groups/createGroup",
             { name },
             {
               headers: { authorization: token },
@@ -236,7 +236,7 @@
         try {
           socket.emit('new-user',{userId:token,message:'joined'})
           const response = await axios.get(
-            "http://localhost:3000/groups/getGroups",
+            "http://34.229.138.78:3000/groups/getGroups",
             {
               headers: { authorization: token },
             }
@@ -264,7 +264,7 @@
           }
 
           const response = await axios.get(
-            `http://localhost:3000/chat/chat/${cur}`
+            `http://34.229.138.78:3000/chat/chat/${cur}`
           );
           document.getElementById("addMembers").className =
             "p-6 space-y-4 md:space-y-6 sm:p-8 shadow w-3/12";
@@ -286,7 +286,7 @@
         try {
           const name = document.getElementById("newMemberName").value;
           const response = await axios.post(
-            "http://localhost:3000/groups/addUser",
+            "http://34.229.138.78:3000/groups/addUser",
             { email: name, GroupName: curN, GroupId: cur }
           );
           document.getElementById("newMemberName").value = "";
@@ -333,7 +333,7 @@
         try {
           const id = e.srcElement.parentElement.className.split(" ")[5];
           const response = await axios.delete(
-            `http://localhost:3000/groups/delete/${id}-${cur}`,
+            `http://34.229.138.78:3000/groups/delete/${id}-${cur}`,
             {
               headers: { authorization: token },
             }
@@ -349,7 +349,7 @@
         try {
           const id = e.srcElement.parentElement.className.split(" ")[5];
           const response = await axios.post(
-            "http://localhost:3000/groups/make-admin",
+            "http://34.229.138.78:3000/groups/make-admin",
             {
               userId: id,
               groupId: cur,
