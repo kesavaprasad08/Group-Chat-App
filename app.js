@@ -7,6 +7,7 @@ dotenv.config();
 const bodyParser = require("body-parser");
 
 const sequelize = require("./util/database");
+const cron =require('./cronJob/archiveMessages')
 
 const socketio = require('socket.io');
 const http =require('http');
@@ -49,6 +50,7 @@ Group.hasMany(UserGroup);
 sequelize
   .sync({ force: false })
   .then(() => {
+    cron();
     // app.listen(3000);
     server.listen(3000);
     io.on('connection',socket => {
