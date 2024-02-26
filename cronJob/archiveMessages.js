@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const Chat = require('../models/chat');
-const ArchivedChat = require('../models/ArchivedChat');
+const ArchivedChat = require('../models/archivedChat');
 const {Op}= require('sequelize');
 
 module.exports=()=>{
