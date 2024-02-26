@@ -7,7 +7,7 @@ const signUpHandler = async () => {
     const phone = document.getElementById("phone").value;
     const password = document.getElementById("password").value;
 
-    const response = await axios.post("http://34.229.138.78 :3000/user/add-user", {
+    const response = await axios.post("http://34.229.138.78:3000/user/add-user", {
       name,
       email,
       phone,
@@ -15,7 +15,7 @@ const signUpHandler = async () => {
     });
     if (response.data.message === "User Created Successfully") {
       window.alert("User Created Successfully");
-      window.location.href = 'http://34.229.138.78 :3000/user/login';
+      window.location.href = 'http://34.229.138.78:3000/user/login';
     } else {
       window.alert(response.data.message);
     }
