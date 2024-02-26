@@ -9,11 +9,11 @@ const ArchivedChat = sequelize.define("ArchivedChat", {
     primaryKey: true,
     autoIncrement: true,
   },
-  Messages: {
+  messages: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  Multimedia:{
+  multimedia:{
     type:Sequelize.STRING
   }
 });

@@ -12,16 +12,16 @@ function generateAccessToken(id, name) {
 exports.addUser = async (req, res, next) => {
   try {
     const data = await User.findAll({
-      attributes: ["Name", "Email", "Phone", "Password"],
+      attributes: ["name", "email", "phone", "password"],
       where: { Email: req.body.email },
     });
     if (data.length === 0) {
       bcrypt.hash(req.body.password, 10, async (err, hash) => {
         await User.create({
-          Name: req.body.name,
-          Email: req.body.email,
-          Phone: req.body.phone,
-          Password: hash,
+          name: req.body.name,
+          email: req.body.email,
+          phone: req.body.phone,
+          password: hash,
         });
       });
       res.status(200).json({ message: "User Created Successfully" });
@@ -44,19 +44,19 @@ exports.getLoginPage = async (req, res, next) => {
 exports.loginUser = async (req, res, next) => {
   try {
     const user = await User.findAll({
-      attributes: ["id", "Name", "Email", "Password"],
+      attributes: ["id", "name", "email", "password"],
       where: {
-        Email: req.body.email,
+        email: req.body.email,
       },
     });
     await Chat.create({
-      Messages: user[0].dataValues.Name + " has joined the chat",
+      messages: user[0].dataValues.name + " has joined the chat",
     });
 
     if (user.length !== 0) {
       bcrypt.compare(
         req.body.password,
-        user[0].dataValues.Password,
+        user[0].dataValues.password,
         (err, result) => {
           if (!result) {
             return res.status(501).json({ message: "user not authorized" });
@@ -64,10 +64,10 @@ exports.loginUser = async (req, res, next) => {
             return res.status(200).json({
               status: "success",
               message: "User  authorized",
-              Name:user[0].dataValues.Name,
+              name:user[0].dataValues.name,
               token: generateAccessToken(
                 user[0].dataValues.id,
-                user[0].dataValues.Name
+                user[0].dataValues.name
               ),
             });
           }

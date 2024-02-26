@@ -9,11 +9,11 @@ const UserGroup = sequelize.define("UserGroup", {
     primaryKey: true,
     autoIncrement: true,
   },
-  GroupName: {
+  groupName: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  IsAdmin: {
+  isAdmin: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
   },

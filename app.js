@@ -1,21 +1,20 @@
 const express = require("express");
 const cors = require("cors");
 
-const dotenv= require('dotenv')
+const dotenv = require("dotenv");
 
 dotenv.config();
 const bodyParser = require("body-parser");
 
 const sequelize = require("./util/database");
-const cron =require('./cronJob/archiveMessages')
+const cron = require("./cronJob/archiveMessages");
 
-const socketio = require('socket.io');
-const http =require('http');
-
+const socketio = require("socket.io");
+const http = require("http");
 
 const app = express();
 const server = http.createServer(app);
-const io =socketio(server);
+const io = socketio(server);
 
 const User = require("./models/user");
 const Group = require("./models/group");
@@ -51,16 +50,17 @@ sequelize
   .sync({ force: false })
   .then(() => {
     cron();
-    // app.listen(3000);
     server.listen(3000);
-    io.on('connection',socket => {
-      socket.on('new-user',data =>{
-        io.emit('user-connected',data)
+    io.on("connection", (socket) => {
+      socket.on("new-user", (data) => {
+        io.emit("user-connected", data);
+      });
+      socket.on("send-chat-message", (data) => {
+        io.emit("chat-messages", data);
+      });
+      socket.on('new-group',(data)=>{
+        io.emit('new-group',data)
       })
-      socket.on('send-chat-message',data =>{
-        io.emit('chat-messages',data)
-      })
-      
-    })
+    });
   })
   .catch((er) => console.log(er));

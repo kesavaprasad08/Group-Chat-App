@@ -128,7 +128,7 @@
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
-      const socket =io('http://34.229.138.78:3000');
+      const socket =io('http://localhost:3000');
       const sendBtn = document.getElementById("btn");
       const token = localStorage.getItem("token");
       const addNewGroupBtn = document.getElementById("grpBtn");
@@ -156,7 +156,12 @@
         }
       })
 
-      socket.on('user-connected',data =>{
+      socket.on('new-group',data =>{
+        if(cur ==0){
+        fetchGroups();
+        }else{
+          getMessagesFromBackend();
+        }
       })
 
       let cur = 0;
@@ -173,7 +178,7 @@
             arr = [];
           }
           const response = await axios.get(
-            `http://34.229.138.78:3000/chat/chat/${lastId}`
+            `http://localhost:3000/chat/chat/${lastId}`
           );
           if (response.data.chat.length > 0) {
             if (arr.length + response.data.chat.length > 10) {
@@ -199,10 +204,10 @@
           
           const childNode = document.createElement("li");
           childNode.className = "border p-2 m-2 shadow rounded";
-          childNode.innerHTML = element.Messages;
-          if(element.Multimedia!==''){
+          childNode.innerHTML = element.messages;
+          if(element.multimedia!==''){
           const multi = document.createElement('img');
-          multi.src=element.Multimedia;
+          multi.src=element.multimedia;
           multi.alt='multimedia';
           multi.style.width = '300px'
                 multi.style.height = '300px'
@@ -213,21 +218,16 @@
         });
       }
 
-      function addMessageToGrpInUi(e){
-
-      }
-
       async function sendMessage() {
         try {
           const message = document.getElementById("messageInput").value;
           const file = document.getElementById('fileInput');
-         
           let formData = new FormData();
           formData.append('message',message);
           formData.append('file',file.files[0]);
           formData.append('groupId',cur);
           const response = await axios.post(
-            "http://34.229.138.78:3000/chat/chat",
+            "http://localhost:3000/chat/chat",
             formData,
             {
               
@@ -238,7 +238,6 @@
           socket.emit('send-chat-message',{message,cur,Name:localStorage.getItem('Name'),multimedia})
           document.getElementById("messageInput").value = "";
           document.getElementById('fileInput').value='';
-          // fetchMessages();
         } catch (e) {
           console.log(e);
         }
@@ -248,14 +247,13 @@
         const name = document.getElementById("groupName").value;
         try {
           const response = await axios.post(
-            "http://34.229.138.78:3000/groups/createGroup",
+            "http://localhost:3000/groups/createGroup",
             { name },
             {
               headers: { authorization: token },
             }
           );
           fetchGroups();
-          window.alert(name + " group created successfully");
           document.getElementById("groupName").value = "";
         } catch (e) {
           console.log(e);
@@ -266,7 +264,7 @@
         try {
           socket.emit('new-user',{userId:token,message:'joined'})
           const response = await axios.get(
-            "http://34.229.138.78:3000/groups/getGroups",
+            "http://localhost:3000/groups/getGroups",
             {
               headers: { authorization: token },
             }
@@ -276,8 +274,8 @@
           response.data.groups.forEach((element) => {
             const childNode = document.createElement("li");
             childNode.className = `border p-2 m-2 shadow rounded ${element.GroupId}`;
-            childNode.innerHTML = element.GroupName;
-            current.className = element.GroupId;
+            childNode.innerHTML = element.groupName;
+            current.className = element.groupId;
             childNode.onclick = getMessagesFromBackend;
             parentNode.appendChild(childNode);
           });
@@ -292,9 +290,10 @@
             cur = e.srcElement.className.split(" ")[5];
             curN = e.srcElement.innerHTML;
           }
+         
 
           const response = await axios.get(
-            `http://34.229.138.78:3000/chat/chat/${cur}`
+            `http://localhost:3000/chat/chat/${cur}`
           );
           document.getElementById("addMembers").className =
             "p-6 space-y-4 md:space-y-6 sm:p-8 shadow w-3/12";
@@ -305,8 +304,7 @@
           document.getElementById("createNewGroup").className = " hidden";
           document.getElementById("chatHead").innerHTML = curN;
           postMessagesToUi(response.data.chat);
-          postUsersInGroupToUi(response.data.groupUsers);
-          
+          postUsersInGroupToUi(response.data.groupUsers);          
         } catch (e) {
           console.log(e);
         }
@@ -316,9 +314,11 @@
         try {
           const name = document.getElementById("newMemberName").value;
           const response = await axios.post(
-            "http://34.229.138.78:3000/groups/addUser",
-            { email: name, GroupName: curN, GroupId: cur }
+            "http://localhost:3000/groups/addUser",
+            { email: name, groupName: curN, groupId: cur }
           );
+          
+          socket.emit('new-group',{message:'new group created'})
           document.getElementById("newMemberName").value = "";
         } catch (e) {
           window.alert("No User Found");
@@ -347,9 +347,9 @@
             "bg-green-600 p-1 text-white rounded text-xs";
           deleteBtn.innerHTML = "Remove";
           deleteBtn.className =
-            "ml-1 bg-red-600 p-1 text-white rounded text-xs";
+            "ml-1 mr-1 bg-red-600 p-1 text-white rounded text-xs";
           childNode.className = `border p-1 m-2 shadow rounded ${element.id}`;
-          childNode.innerHTML = element.Name;
+          childNode.innerHTML = element.name;
           current.className = element.id;
           deleteBtn.onclick = deleteUserHandler;
           MakeAdminBtn.onclick = makeAdminHandler;
@@ -363,11 +363,12 @@
         try {
           const id = e.srcElement.parentElement.className.split(" ")[5];
           const response = await axios.delete(
-            `http://34.229.138.78:3000/groups/delete/${id}-${cur}`,
+            `http://localhost:3000/groups/delete/${id}-${cur}`,
             {
               headers: { authorization: token },
             }
           );
+          getMessagesFromBackend();
           fetchGroups();
         } catch (e) {
           window.alert("Only Admin can remove User from Groups");
@@ -379,7 +380,7 @@
         try {
           const id = e.srcElement.parentElement.className.split(" ")[5];
           const response = await axios.post(
-            "http://34.229.138.78:3000/groups/make-admin",
+            "http://localhost:3000/groups/make-admin",
             {
               userId: id,
               groupId: cur,

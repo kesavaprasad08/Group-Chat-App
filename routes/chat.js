@@ -6,7 +6,7 @@ const userAuthentication = require("../middlewares/auth");
 
 const upload = require("../middlewares/fileUpload");
 
-const chatController = require("../controllers/chatController");
+const chatController = require("../controllers/chat-controller");
 
 router.get("/", chatController.getChatPage);
 

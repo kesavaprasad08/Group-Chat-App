@@ -15,13 +15,18 @@ exports.getChats = async (req, res) => {
   try {
     const id = req.params.id;
     const chat = await Chat.findAll({ where: { GroupId: id } });
+    
     const groupUsers = await UserGroup.findAll({
       attributes: ["UserId"],
       where: { GroupId: id },
     });
-    const ids = groupUsers.map((obj) => obj.UserId);
+    
+    
+    const ids = groupUsers.map((obj) => 
+    obj.dataValues.UserId
+  );
     const users = await User.findAll({
-      attributes: ["Name", "id"],
+      attributes: ["name", "id"],
       where: {
         id: ids,
       },
@@ -29,6 +34,7 @@ exports.getChats = async (req, res) => {
 
     res.status(200).json({ chat: chat, groupUsers: users });
   } catch (err) {
+console.log(err)
     res.status(500).json({ message: err.message });
   }
 };
@@ -36,8 +42,9 @@ exports.getChats = async (req, res) => {
 exports.postChat = async (req, res, next) => {
   try {
     const file =req.file;
-    const message=req.user.dataValues.Name + ": " + req.body.message;
+    const message=req.user.dataValues.name + ": " + req.body.message;
     const groupId=req.body.groupId;
+    console.log('groupId :',groupId, message)
     let fileUrl='';
     if(file){
       const currentDate = new Date();
@@ -49,11 +56,11 @@ exports.postChat = async (req, res, next) => {
       fileUrl=await UploadFileT0S3(fileName,buffer);
     }
     const newChat =await Chat.create({
-      Messages: message,
+      messages: message,
       GroupId:groupId,
-      Multimedia:fileUrl,
+      multimedia:fileUrl,
     });
-    res.status(200).json({ message: req.body.message, multimedia:newChat.Multimedia });
+    res.status(200).json({ message: req.body.message, multimedia:newChat.multimedia });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

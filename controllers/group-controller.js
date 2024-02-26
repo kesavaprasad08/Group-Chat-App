@@ -6,16 +6,17 @@ const UserGroup = require("../models/usergroup");
 exports.createGroup = async (req, res, next) => {
   try {
     const newGroup = await Group.create({
-      Name: req.body.name,
+      name: req.body.name,
     });
     const newUserGroup = await UserGroup.create({
       UserId: req.user.dataValues.id,
       GroupId: newGroup.id,
-      GroupName: req.body.name,
-      IsAdmin: true,
+      groupName: req.body.name,
+      isAdmin: true,
     });
     res.status(200).json({ newGroup });
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: e });
   }
 };
@@ -36,19 +37,22 @@ exports.getGroups = async (req, res, next) => {
 
 exports.addNewUser = async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { Email: req.body.email } });
+    const user = await User.findOne({ where: { email: req.body.email } });
+    
+    console.log(req.body)
     if (user) {
       const newUserGroup = await UserGroup.create({
         UserId: user.id,
-        GroupId: Number(req.body.GroupId),
-        GroupName: req.body.GroupName,
-        IsAdmin: false,
+        GroupId: Number(req.body.groupId),
+        groupName: req.body.groupName,
+        isAdmin: false,
       });
       res.status(202).json(newUserGroup);
     } else {
       throw new Error("No User Found");
     }
   } catch (e) {
+    console.log(e)
     res.status(500).json({ message: e });
   }
 };
@@ -60,13 +64,13 @@ exports.deleteUserFromGroup = async (req, res, next) => {
     const groupToBeDeletedFrom = req.params.id.split("-")[1];
     const user = await UserGroup.findOne({
       where: {
-        UserId: currentUser,
-        GroupId: groupToBeDeletedFrom,
+        userId: currentUser,
+        groupId: groupToBeDeletedFrom,
       },
     });
-    if (user.IsAdmin) {
+    if (user.isAdmin) {
       const deleteUser = await UserGroup.destroy({
-        where: { GroupId: groupToBeDeletedFrom, UserId: UserToBeDeleted },
+        where: { groupId: groupToBeDeletedFrom, userId: UserToBeDeleted },
       });
     } else {
       response
@@ -86,19 +90,19 @@ exports.makeAdmin = async (req, res, next) => {
     const groupId = req.body.groupId;
     const user = await UserGroup.findOne({
       where: {
-        UserId: current,
-        GroupId: groupId,
+        userId: current,
+        groupId: groupId,
       },
     });
-    if (user.IsAdmin) {
+    if (user.isAdmin) {
       const userToBeAdmin = await UserGroup.findOne({
         where: {
-          UserId: userToBeMadeAmin,
-          GroupId: groupId,
+          userId: userToBeMadeAmin,
+          groupId: groupId,
         },
       });
       await userToBeAdmin.update({
-        IsAdmin: true,
+        isAdmin: true,
       });
       res.status(200).json({ message: "User status updated Successfully" });
     } else {
